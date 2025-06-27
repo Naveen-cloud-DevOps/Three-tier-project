@@ -1,0 +1,140 @@
+=============>three tier in Azure <=============
+1. Create 2 Vm in any region with nsg allow 22,80.  // i create in us-east
+   ---------------------------------- FrontEnd---------------------------------------
+sudo apt update -y
+
+sudo apt install apache2 -y
+
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
+sudo apt-get install -y nodejs -y
+
+sudo apt update -y
+
+sudo npm install -g corepack -y     
+
+corepack enable
+
+corepack prepare yarn@stable --activate 
+
+sudo npm install -g pm2
+
+----------- step-2-----------Modifying config.js
+then clone your git repo 
+   git clone https://github.com/CloudTechDevOps/2nd10WeeksofCloudOps-main.git
+   
+  checkout client cd client 
+
+11. edit the config.js
+
+vi client/src/pages/config.js
+  
+const API_BASE_URL = "http://api.narni.co.in";
+ 
+in above line change to your backend publicip
+const API_BASE_URL = "http://publicip";
+ex;const API_BASE_URL = "http://32.68.98.10";
+
+
+------------------------------------------- step-3 ----------- Run 
+12. then go to client directory 
+13.run below commands
+
+npm install 
+npm run build
+sudo cp -r build/* /var/www/html
+
+your frontend part is completed 
+
+
+======================================================
+2. create Azure Database for MySQL servers in southeast Asia
+     1. create
+     2. Flexible server ---> Advanced Create
+     3. Give unique server name
+     4. choose southeast Asia
+     5. Authentication give Login username, password and Confirm Password
+     6. inside Networking--> Connectivity method:
+            Public access (allowed IP addresses) and Private endpoint
+	     "public Access" check it the box ✅
+     7. Firewall rules -> check it the box✅ Allow public access from any Azure service within Azure to this server
+     8. + Add current client IP address ( 183.83.39.208 ) 
+         ---click just it 
+     9. than skip all and Review and Create
+------->:important notes:<---------
+  --> after creating database , Go to Database --> setting  --> Server parameters --> Search require_secure_transport --> it by default ON we have to OFF first time and than save.
+==================================================================
+3. go to ,MYsql workbench or connect DB from Azure Portal and add this sql file
+   -- Drop and recreate the test database
+DROP DATABASE IF EXISTS test;
+CREATE DATABASE test;
+USE test;
+
+-- Drop any existing trigger
+DROP TRIGGER IF EXISTS must_update_price;
+
+-- Drop the books table if it exists
+DROP TABLE IF EXISTS books;
+
+-- Create the books table
+CREATE TABLE books (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(300) DEFAULT NULL,
+  `desc` VARCHAR(500) DEFAULT NULL,
+  `price` FLOAT DEFAULT NULL,
+  `cover` VARCHAR(500) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- Insert full sample book (optional)
+-- INSERT INTO books (`title`, `desc`, `price`, `cover`) VALUES
+-- ('MultiCloud', 'Multicloud with DevOps course by Veera Sir', 2343.2, 'https://example.com/multicloud.png');
+INSERT INTO books (id, title, desc, price, cover) VALUES
+(1, 'MultiCloud', 'this is mutlicloud with devops cource by veera sir nareshit ', 2343.2, 'https://docs.multy.dev/assets/images/multi-cloud-314609adeec670988dff0882a93fdcb0.png'),
+(2, 'DevOps', 'if you understand the devops it is very easy', 2342.3, 'https://media.licdn.com/dms/image/v2/D5612AQHsA9dJVtZRdw/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1730826289071?e=2147483647&v=beta&t=JGr0gJH6RE9b1Dk7nHAYF14Kmv96Gm519UOy_rSa3xE');
+
+-- Optional: Insert a book with only title (like a form with only one input filled)
+INSERT INTO books (title) VALUES ('Title Only');
+
+-- Optional: Insert a completely empty book (form submitted with nothing filled)
+INSERT INTO books () VALUES ();
+
+4.-----------------then connect to backend server---------------------------
+
+sudo apt update -y
+
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
+sudo apt-get install -y nodejs -y
+
+sudo apt update -y
+
+sudo npm install -g corepack -y
+
+corepack enable
+
+corepack prepare yarn@stable --activate 
+
+sudo npm install -g pm2
+
+
+5. then clone your git repo 
+   git clone https://github.com/CloudTechDevOps/2nd10WeeksofCloudOps-main.git
+   cd backend 
+6. edit the .env file in bellow path if u dont have any .env file just create in below path
+
+2nd10WeeksofCloudOps-main.git/backend/.env
+
+### add this mater
+DB_HOST=mydb1.mysql.database.azure.com
+DB_USERNAME=anyuser	#cahnge to your Azure SQL  user name 
+DB_PASSWORD="veera"   # change to your Azure SQL password
+PORT=3306
+
+7. then run below command in backend directory
+  
+npm install
+npm install dotenv
+
+sudo pm2 start index.js --name "backendApi"
+
+
+8. Access Frontend IP
